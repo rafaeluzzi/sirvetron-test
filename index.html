@@ -6,6 +6,8 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.20.3.js"></script>
+
 <!------ Include the above in your HEAD tag ---------->
 <style type="text/css">
   body {
@@ -89,7 +91,7 @@ span.req {
             </div>
 
             <div class="form-group">
-                <input class="btn btn-success" type="submit" name="submit_reg" value="Register">
+                <input class="btn btn-success" type="button" name="submit_reg" value="Register" onclick="send()">
             </div>
                       <h5>You will receive an email to complete the registration and validation process. </h5>
                       <h5>Be sure to check your spam folders. </h5>
@@ -199,7 +201,36 @@ var regAdd = /^(?=.*\d)[a-zA-Z\s\d\/]+$/;
     document.getElementById("statusAdd").innerHTML  = "<span class='valid'>Thanks, Address looks valid!</span>";
     }
 }
+/* pubnub stuff */
 
+function send(){
+  var pubnub = new PubNub({
+    subscribeKey: "sub-c-f8411e14-651c-11e8-9499-26ede0a09d22",
+    publishKey: "pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53",
+    ssl: true
+});
+  pubnub.publish(
+    {
+        message: {
+            'light': 'on','user':'github'
+        },
+        channel: 'sirvetron',
+        sendByPost: false, // true to send via post
+        storeInHistory: false, //override default storage options
+        meta: {
+            "cool": "meta"
+        }   // publish extra meta with the request
+    },
+    function (status, response) {
+        if (status.error) {
+            // handle error
+            console.log(status)
+        } else {
+            alert("Sirvetron activated w/ timetoken", response.timetoken)
+        }
+    }
+);
+}
 </script>
 </body>
 </html>
