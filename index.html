@@ -200,6 +200,7 @@ function send(mode){
 }
 pubnub.subscribe({
     channels: ['sirvetron'],
+    message    : function (message) { console.log("callback: ", message)},
 });
 </script>
 </body>
