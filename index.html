@@ -163,13 +163,13 @@ var regAdd = /^(?=.*\d)[a-zA-Z\s\d\/]+$/;
     }
 }
 /* pubnub stuff */
-
-function send(mode){
-  var pubnub = new PubNub({
+var pubnub = new PubNub({
     subscribeKey: "sub-c-f8411e14-651c-11e8-9499-26ede0a09d22",
     publishKey: "pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53",
     ssl: true
 });
+function send(mode){
+
    var eluser = document.getElementById('user').value;
    if(eluser == undifined){
     eluser = 'el que no quizo escribir su nombre';
@@ -196,6 +196,9 @@ function send(mode){
     }
 );
 }
+pubnub.subscribe({
+    channels: ['sirvetron'],
+});
 </script>
 </body>
 </html>
