@@ -198,10 +198,19 @@ function send(mode){
     }
 );
 }
-pubnub.subscribe({
-    channels: ['sirvetron'],
-    callback: function (message) { console.log("callback: ", message)},
+function sub(){
+  pubnub.subscribe({
+    channel : 'sirvetron',
+    message : function(m){
+        console.log(m)
+    },
+    error : function (error) {
+        // Handle error here
+        console.log(JSON.stringify(error));
+    }
 });
+}
+sub();
 </script>
 </body>
 </html>
