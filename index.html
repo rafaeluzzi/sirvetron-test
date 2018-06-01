@@ -171,10 +171,11 @@ var pubnub = new PubNub({
 function send(mode){
 
    var eluser = document.getElementById('user').value;
-   console.log(eluser);
-   if(eluser === undefined){
+
+   if(eluser === undefined || eluser == ''){
     eluser = 'el que no quizo escribir su nombre';
    }
+   console.log(eluser);
   pubnub.publish(
     {
         message: {
