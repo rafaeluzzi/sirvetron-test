@@ -46,7 +46,7 @@ span.req {
 
             <div class="form-group">
                 <label for="lastname"><span class="req">* </span> Nombre: </label>
-                    <input class="form-control" type="text" name="lastname" id = "txt" onkeyup = "Validate(this)" placeholder="Quien quiere prender el Sirvetron" required />
+                    <input class="form-control" type="text" name="lastname" id = "user" onkeyup = "Validate(this)" placeholder="Quien quiere prender el Sirvetron" required />
                         <div id="errLast"></div>
             </div>
 
@@ -170,10 +170,14 @@ function send(mode){
     publishKey: "pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53",
     ssl: true
 });
+   var eluser = document.getElementById('user').value;
+   if(eluser == undifined){
+    eluser = 'el que no quizo escribir su nombre';
+   }
   pubnub.publish(
     {
         message: {
-            'light': mode,'user':'github'
+            'light': mode,'user':eluser
         },
         channel: 'sirvetron',
         sendByPost: false, // true to send via post
