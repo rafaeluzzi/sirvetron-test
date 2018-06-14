@@ -198,6 +198,36 @@ function send(mode){
     }
 );
 }
+function apisend(user,mode){
+
+   var eluser = user;
+
+   if(eluser === undefined || eluser == ''){
+    eluser = 'el que no quizo escribir su nombre';
+   }
+   console.log(eluser);
+  pubnub.publish(
+    {
+        message: {
+            'light': mode,'user':eluser
+        },
+        channel: 'sirvetron',
+        sendByPost: false, // true to send via post
+        storeInHistory: false, //override default storage options
+        meta: {
+            "cool": "meta"
+        }   // publish extra meta with the request
+    },
+    function (status, response) {
+        if (status.error) {
+            // handle error
+            console.log(status)
+        } else {
+            console.log("Sirvetron "+mode+" w/ timetoken", response.timetoken)
+        }
+    }
+);
+}
 function sub(){
   pubnub.subscribe({
     channel : 'sirvetron',
@@ -273,7 +303,11 @@ function getAllUrlParams(url) {
   return obj;
 }
 if(getAllUrlParams().user){
-    alert(getAllUrlParams().user);
+    if(getAllUrlParams().status == 'on'){
+            apisend(getAllUrlParams().user,'on');
+    }else if(getAllUrlParams().status == 'off'){
+            apisend(getAllUrlParams().user,'off');
+    }
 }
 </script>
 </body>
