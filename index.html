@@ -312,14 +312,7 @@ if(getAllUrlParams().user){
     }
 }
 </script>
-<script>
-  var db = firebase.firestore();
-  db.collection("users").get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-    });
-});
-</script>
+
 <script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
 <script>
   // Initialize Firebase
@@ -332,6 +325,14 @@ if(getAllUrlParams().user){
     messagingSenderId: "507400187135"
   };
   firebase.initializeApp(config);
+</script>
+<script>
+  var db = firebase.firestore();
+  db.collection("users").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+    });
+});
 </script>
 </body>
 </html>
