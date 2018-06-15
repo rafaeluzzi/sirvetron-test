@@ -7,6 +7,8 @@
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.20.3.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
 
 <!------ Include the above in your HEAD tag ---------->
 <style type="text/css">
@@ -309,6 +311,27 @@ if(getAllUrlParams().user){
             apisend(getAllUrlParams().user,'off');
     }
 }
+</script>
+<script>
+  var db = firebase.firestore();
+  db.collection("users").get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+    });
+});
+</script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBXTmSdlQghhl1sMl5ln70KObGa5yX8WUc",
+    authDomain: "beertron-2d9fb.firebaseapp.com",
+    databaseURL: "https://beertron-2d9fb.firebaseio.com",
+    projectId: "beertron-2d9fb",
+    storageBucket: "beertron-2d9fb.appspot.com",
+    messagingSenderId: "507400187135"
+  };
+  firebase.initializeApp(config);
 </script>
 </body>
 </html>
