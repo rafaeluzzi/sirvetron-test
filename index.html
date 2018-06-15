@@ -329,9 +329,6 @@ if(getAllUrlParams().user){
   firebase.initializeApp(config);
 </script>
 <script>
-const firebase = require("firebase");
-  // Required for side-effects
-require("firebase/firestore");
   var db = firebase.firestore();
   db.collection("users").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
