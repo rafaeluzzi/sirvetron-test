@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Beertron Test</title>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link href="https://fonts.googleapis.com/css?family=Lora|Patua+One" rel="stylesheet">
+<link href="/css/beertron.css" rel="stylesheet">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script> -->
+<script src="http://cdn.pubnub.com/pubnub-3.16.5.min.js"></script>
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+<script src="/js/controllers.js"></script>
+
+<!------ Include the above in your HEAD tag ---------->
+<style type="text/css">
+
+.container{
+    width: 100%;
+    height: 100vh;
+    padding-bottom: 100px;
+}
+.header-video {
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    z-index: 0;
+    position: absolute;
+    overflow: hidden;
+}
+.background-video.funpeople {
+    background: transparent url('http://citywiz.com/img/video/funpeople.png') no-repeat 500px 0;
+    background-size: cover;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+}
+.video-overlay {
+    background-color: rgba(245,165,3,0.5);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: absolute;
+}
+.tap{
+    height: 100%;
+}
+.beerinfo{
+    margin-top: 50px;
+    height: 100%;
+    display: block;
+    background: rgba(0,0,0,.8);
+    color:#fff;
+}
+.text{
+font-family: 'Lora', serif;
+font-size: 18px;
+}
+.title{
+    font-family: 'Patua One', cursive;
+    font-size: 24px;
+    min-height: 68px;
+}
+.qr-title{
+    font-family: 'Patua One', cursive;
+    font-size: 24px;
+}
+.center{
+    text-align: center;
+}
+</style>
+</head>
+<body ng-app="beertronApp" ng-controller="displayCtrl" id="displayController">
+<div class="container">
+<div class="header-video">
+<video autoplay="" class="background-video funpeople" data-prevent-cleanup="keep" loop="" preload="">
+<source src="http://citywiz.com/img/video/funpeople.mp4" type="video/mp4">
+<source src="http://citywiz.com/img/video/funpeople.webm" type="video/webm">
+</video>
+<div class="video-overlay"></div>
+</div>
+                  <div class="col-md-4 tap">
+
+                  <div class="beerinfo">
+                  <div class="col-md-4">
+                            <br />
+                            <p class="title">On Tap 1 <br /><span ng-if="tap1_status == 'on'" style="color:green">Active</span></p>
+                            <hr>
+                            <p class="title">{{elkeg1.beername}}</p>
+                            <hr>
+                            <p class="title">{{elkeg1.brewery}}</p>
+                            <p class="text">{{elkeg1.brewery_city}}</p>
+                            <hr>
+                            <div class="col-md-6"><p class="text center">ABV <br/>{{elkeg1.ABV}}%</p></div>
+                            <div class="col-md-6"><p class="text center">IBU <br/>{{elkeg1.IBU}}</p></div>
+                            <hr style="clear: both;">
+                            <div class="center">
+                                <p class="qr-title">Price for 12oz</p>
+                                <img style="margin: 20px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAS5SURBVHhe7Z1biE1RHIfHPSWa3BrJPeOB8qAI0wgplBTKeFESTUmihCghl1JSbk+KSHmQcldeKF4m8aIp3pSSWymXXM74zl4/UzPNmabozH/91/pqdWa3xff9F9Nx2ntPTSaTyWQysdDW1jahVCrdZ/3ga3Pg9Zv1jNUoZb/QO4DQ1pBuGzy/sMZL3ScENqg3CvDdKXWfELhNrQUcf2V9NLQ+S62A4ytS9wmBF9RawPEGnTIBPtOlVsBxq075hMDHai3geJ5OmQCfQaxf0iv7ld949NdpfxD4NqS2U6tTZsDxpdwKOJ6oU74gbKgaCzh+r1OmwOu2FP+yWKd8QdjM0Bcg/KlOmQKvc1Is4HizTvmCsFVqLOD4mk6ZArVdwTCA5zGd8gVhnd/yntApU+C1VooFHPt860vb0ZAYIPQQL5OsLbxW89oOxw+U4AvCzqsxKvB+oQRfEHZHjVGB9zsl+IK2lpAYJQOV4Qf+pr1RXHTgPlYZfiDqp/qiA/dZyvABQR3+lx4b+C9Sig8IqlNblOC/Qik+IGiK2qIE/3VK8QFBM9QWJfj7+jzLwYY0K8UHeUOMkTfEGHlDjEFQvdqiBH9f77JoGhfS4sTdhhA0XG1Rgv8ypfiApr5ElUJefKA+Wyl+IOqD+qID96nK8ANRL9QXI8OU4Qc25K7iogLvT0rwBWEdrneKBbyfKcEXhO1WY1TgfV0JviBsnRqjAu+TSvAFYXPVGBV4b1eCLwgbo8bYWKkEf7ApnxQZDTjXS98fxD1SZxTg+5WXftL3B4FnQ2oc4Gvylon/BoFb1BoF+F6Uuk8IbFRrFODr/rbokWqNAnx9fezeFUS+Vq95cK2Ttl+IvK5e0+D5Rsq+IXSfmk2D500p+4bQ5Wo2DZ4HpOwbQmO58NrvRyadYVNiuHlnnHT9U/7+rGiT4OfzvsJKlL8/q90k+N2TahrQvDKk24QNOSLVNKDZ+pWMa6SaDvwtNHudFm6TpZkORD9Uvynw+sZLX2mmA+EmLwvC67kU04LwrZqBKfDy/eDLShC+RDOwxn4ppgUbYvImHrxMPSm1atA+LIzAFmzIUimmB/HlqzqsMVN66cGGdHgkqwVwGiW99CD+ieZgAnzKTyzqI730YACmPvXFJ61PeTvDAC5pFibA55XU0oQBnNYsrNAitTRhQw5rECbAx+cjYXsKM+jwFOnehg0x+bTtqsEATH2ehc9lqaUJA2jWLEyAzyWppQkD2KhZmACfM1JLEwZg6kbQvCGlUpNmYQJ8jkstTRiAqctK8UnrapPOGNyQg1JLE2awIIzCDLukliYMYH6YgxmS35ARrDWVFt9CmlinWO0/W7AS/Jo7rPV82eXv1cM1TWqZ7ihvCsOqCOef8+L3fnJrMOxNxeQrwIak/ZFHNWHYg1ndXuXI+fcs3z9quxowy2msq5UWQ77G6tFdu/y6z6xbfNnl79XDlc5dU13BAPK7LEswgLwhlmAAeUMswQDyhliCAeQNsQTvikw9hxGfHVJLE2ZQyxC+h3H0PrgslFq6MIS9mkevgscNKaUNs+jHMPb01r8U/tzfrPJPsvb3fPd/gYEMYTBzeF1crcWf18AaLYVMJpPJZCKmpuYPp1C4NWAfaLkAAAAASUVORK5CYII=">
+
+                                <p class="qr-title" style="font-size: 30px">${{elkeg1.price_2}}</p>
+                                <p class="text">Buy as many ounces as you like</p>
+                            </div>
+                  </div>
+                  <div class="col-md-8" style="height: 100%;padding-right: 0px">
+                    <div style="background: url({{elkeg1.image_url}});height: 50%;
+    background-size: 100%;"></div>
+                     <div ng-if="!userelkeg1" class="qr" style="height: 50%;display: block;background-color: white">
+                            <br /><br />
+                         <p class="qr-title center" style="color:#0f0f0f;">Scan code with Beertron app</p>
+                            <br />
+                        <img style="width:50%;margin: 0 auto;display: block;" src="{{elkeg1.qr_url}}"/>
+                     </div>
+                     <div ng-if="userelkeg1" class="qr" style="height: 50%;display: block;background-color: white">
+                          <!--- card -->
+                           <div class="card hovercard" >
+                                <div class="cardheader">
+
+                                </div>
+                                <div class="avatar">
+                                    <img alt="" src="{{userelkeg1.avatar_url}}">
+                                </div>
+                                <div class="info">
+                                    <div class="title">
+                                        <p class="qr-title center" style="color:#0f0f0f;">Now Serving: {{userelkeg1.name}} {{userelkeg1.lastname}}</p>
+                                        <p class="text">Your Balance: ${{userelkeg1.credits}}</p>
+                                    </div>
+                                    <div class="desc">Passionate designer</div>
+                                    <div class="desc">Curious developer</div>
+                                    <div class="desc">Tech geek</div>
+                                </div>
+                                <div>
+                                    <p>This is what i wanted to develop</p>
+                                </div>
+                            </div>
+                            <!-- ends card -->
+
+
+                     </div>
+                </div>
+                  </div>
+                  </div>
+                <div class="col-md-4 tap">
+                  <div class="beerinfo">
+                  <div class="col-md-4">
+                            <br />
+                            <p class="title">On Tap 2 {{tap2_status}}</p>
+                            <hr>
+                            <p class="title">{{elkeg2.beername}}</p>
+                            <hr>
+                            <p class="title">{{elkeg2.brewery}}</p>
+                            <p class="text">{{elkeg2.brewery_city}}</p>
+                            <hr>
+                            <div class="col-md-6"><p class="text center">ABV <br/>{{elkeg2.ABV}}%</p></div>
+                            <div class="col-md-6"><p class="text center">IBU <br/>{{elkeg2.IBU}}</p></div>
+                            <hr style="clear: both;">
+                            <div class="center">
+                                <p class="qr-title">Price for 12oz</p>
+                                <img style="margin: 20px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAS5SURBVHhe7Z1biE1RHIfHPSWa3BrJPeOB8qAI0wgplBTKeFESTUmihCghl1JSbk+KSHmQcldeKF4m8aIp3pSSWymXXM74zl4/UzPNmabozH/91/pqdWa3xff9F9Nx2ntPTSaTyWQysdDW1jahVCrdZ/3ga3Pg9Zv1jNUoZb/QO4DQ1pBuGzy/sMZL3ScENqg3CvDdKXWfELhNrQUcf2V9NLQ+S62A4ytS9wmBF9RawPEGnTIBPtOlVsBxq075hMDHai3geJ5OmQCfQaxf0iv7ld949NdpfxD4NqS2U6tTZsDxpdwKOJ6oU74gbKgaCzh+r1OmwOu2FP+yWKd8QdjM0Bcg/KlOmQKvc1Is4HizTvmCsFVqLOD4mk6ZArVdwTCA5zGd8gVhnd/yntApU+C1VooFHPt860vb0ZAYIPQQL5OsLbxW89oOxw+U4AvCzqsxKvB+oQRfEHZHjVGB9zsl+IK2lpAYJQOV4Qf+pr1RXHTgPlYZfiDqp/qiA/dZyvABQR3+lx4b+C9Sig8IqlNblOC/Qik+IGiK2qIE/3VK8QFBM9QWJfj7+jzLwYY0K8UHeUOMkTfEGHlDjEFQvdqiBH9f77JoGhfS4sTdhhA0XG1Rgv8ypfiApr5ElUJefKA+Wyl+IOqD+qID96nK8ANRL9QXI8OU4Qc25K7iogLvT0rwBWEdrneKBbyfKcEXhO1WY1TgfV0JviBsnRqjAu+TSvAFYXPVGBV4b1eCLwgbo8bYWKkEf7ApnxQZDTjXS98fxD1SZxTg+5WXftL3B4FnQ2oc4Gvylon/BoFb1BoF+F6Uuk8IbFRrFODr/rbokWqNAnx9fezeFUS+Vq95cK2Ttl+IvK5e0+D5Rsq+IXSfmk2D500p+4bQ5Wo2DZ4HpOwbQmO58NrvRyadYVNiuHlnnHT9U/7+rGiT4OfzvsJKlL8/q90k+N2TahrQvDKk24QNOSLVNKDZ+pWMa6SaDvwtNHudFm6TpZkORD9Uvynw+sZLX2mmA+EmLwvC67kU04LwrZqBKfDy/eDLShC+RDOwxn4ppgUbYvImHrxMPSm1atA+LIzAFmzIUimmB/HlqzqsMVN66cGGdHgkqwVwGiW99CD+ieZgAnzKTyzqI730YACmPvXFJ61PeTvDAC5pFibA55XU0oQBnNYsrNAitTRhQw5rECbAx+cjYXsKM+jwFOnehg0x+bTtqsEATH2ehc9lqaUJA2jWLEyAzyWppQkD2KhZmACfM1JLEwZg6kbQvCGlUpNmYQJ8jkstTRiAqctK8UnrapPOGNyQg1JLE2awIIzCDLukliYMYH6YgxmS35ARrDWVFt9CmlinWO0/W7AS/Jo7rPV82eXv1cM1TWqZ7ihvCsOqCOef8+L3fnJrMOxNxeQrwIak/ZFHNWHYg1ndXuXI+fcs3z9quxowy2msq5UWQ77G6tFdu/y6z6xbfNnl79XDlc5dU13BAPK7LEswgLwhlmAAeUMswQDyhliCAeQNsQTvikw9hxGfHVJLE2ZQyxC+h3H0PrgslFq6MIS9mkevgscNKaUNs+jHMPb01r8U/tzfrPJPsvb3fPd/gYEMYTBzeF1crcWf18AaLYVMJpPJZCKmpuYPp1C4NWAfaLkAAAAASUVORK5CYII=">
+
+                                <p class="qr-title" style="font-size: 30px">${{elkeg2.price_2}}</p>
+                                <p class="text">Buy as many ounces as you like</p>
+                            </div>
+                  </div>
+                <div class="col-md-8" style="height: 100%;padding-right: 0px">
+                    <div style="background: url({{elkeg2.image_url}});height: 50%;
+    background-size: 100%;"></div>
+                     <div class="qr" style="height: 50%;display: block;background-color: white">
+                            <br /><br />
+                         <p class="qr-title center" style="color:#0f0f0f;">Scan code with Beertron app</p>
+                            <br />
+                        <img style="width:50%;margin: 0 auto;display: block;" src="{{elkeg2.qr_url}}"/>
+                     </div>
+                </div>
+</div>
+</div>
+<div class="col-md-4 tap">
+                                  <div class="beerinfo">
+                  <div class="col-md-4">
+                            <br />
+                            <p class="title">On Tap 3 {{tap3_status}}</p>
+                            <hr>
+                            <p class="title">{{el3.beername}}</p>
+                            <hr>
+                            <p class="title">{{el3.brewery}}</p>
+                            <p class="text">{{el3.brewery_city}}</p>
+                            <hr>
+                            <div class="col-md-6"><p class="text center">ABV <br/>{{el3.ABV}}%</p></div>
+                            <div class="col-md-6"><p class="text center">IBU <br/>{{el3.IBU}}</p></div>
+                            <hr style="clear: both;">
+                            <div class="center">
+                                <p class="qr-title">Price for 12oz</p>
+                                <img style="margin: 20px 0;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAS5SURBVHhe7Z1biE1RHIfHPSWa3BrJPeOB8qAI0wgplBTKeFESTUmihCghl1JSbk+KSHmQcldeKF4m8aIp3pSSWymXXM74zl4/UzPNmabozH/91/pqdWa3xff9F9Nx2ntPTSaTyWQysdDW1jahVCrdZ/3ga3Pg9Zv1jNUoZb/QO4DQ1pBuGzy/sMZL3ScENqg3CvDdKXWfELhNrQUcf2V9NLQ+S62A4ytS9wmBF9RawPEGnTIBPtOlVsBxq075hMDHai3geJ5OmQCfQaxf0iv7ld949NdpfxD4NqS2U6tTZsDxpdwKOJ6oU74gbKgaCzh+r1OmwOu2FP+yWKd8QdjM0Bcg/KlOmQKvc1Is4HizTvmCsFVqLOD4mk6ZArVdwTCA5zGd8gVhnd/yntApU+C1VooFHPt860vb0ZAYIPQQL5OsLbxW89oOxw+U4AvCzqsxKvB+oQRfEHZHjVGB9zsl+IK2lpAYJQOV4Qf+pr1RXHTgPlYZfiDqp/qiA/dZyvABQR3+lx4b+C9Sig8IqlNblOC/Qik+IGiK2qIE/3VK8QFBM9QWJfj7+jzLwYY0K8UHeUOMkTfEGHlDjEFQvdqiBH9f77JoGhfS4sTdhhA0XG1Rgv8ypfiApr5ElUJefKA+Wyl+IOqD+qID96nK8ANRL9QXI8OU4Qc25K7iogLvT0rwBWEdrneKBbyfKcEXhO1WY1TgfV0JviBsnRqjAu+TSvAFYXPVGBV4b1eCLwgbo8bYWKkEf7ApnxQZDTjXS98fxD1SZxTg+5WXftL3B4FnQ2oc4Gvylon/BoFb1BoF+F6Uuk8IbFRrFODr/rbokWqNAnx9fezeFUS+Vq95cK2Ttl+IvK5e0+D5Rsq+IXSfmk2D500p+4bQ5Wo2DZ4HpOwbQmO58NrvRyadYVNiuHlnnHT9U/7+rGiT4OfzvsJKlL8/q90k+N2TahrQvDKk24QNOSLVNKDZ+pWMa6SaDvwtNHudFm6TpZkORD9Uvynw+sZLX2mmA+EmLwvC67kU04LwrZqBKfDy/eDLShC+RDOwxn4ppgUbYvImHrxMPSm1atA+LIzAFmzIUimmB/HlqzqsMVN66cGGdHgkqwVwGiW99CD+ieZgAnzKTyzqI730YACmPvXFJ61PeTvDAC5pFibA55XU0oQBnNYsrNAitTRhQw5rECbAx+cjYXsKM+jwFOnehg0x+bTtqsEATH2ehc9lqaUJA2jWLEyAzyWppQkD2KhZmACfM1JLEwZg6kbQvCGlUpNmYQJ8jkstTRiAqctK8UnrapPOGNyQg1JLE2awIIzCDLukliYMYH6YgxmS35ARrDWVFt9CmlinWO0/W7AS/Jo7rPV82eXv1cM1TWqZ7ihvCsOqCOef8+L3fnJrMOxNxeQrwIak/ZFHNWHYg1ndXuXI+fcs3z9quxowy2msq5UWQ77G6tFdu/y6z6xbfNnl79XDlc5dU13BAPK7LEswgLwhlmAAeUMswQDyhliCAeQNsQTvikw9hxGfHVJLE2ZQyxC+h3H0PrgslFq6MIS9mkevgscNKaUNs+jHMPb01r8U/tzfrPJPsvb3fPd/gYEMYTBzeF1crcWf18AaLYVMJpPJZCKmpuYPp1C4NWAfaLkAAAAASUVORK5CYII=">
+
+                                <p class="qr-title" style="font-size: 30px">${{el3.price_2}}</p>
+                                <p class="text">Buy as many ounces as you like</p>
+                            </div>
+                  </div>
+                <div class="col-md-8" style="height: 100%;padding-right: 0px">
+                    <div style="background: url({{el3.image_url}});height: 50%;
+    background-size: 100%;"></div>
+                     <div class="qr" style="height: 50%;display: block;background-color: white">
+                            <br /><br />
+                         <p class="qr-title center" style="color:#0f0f0f;">Scan code with Beertron app</p>
+                            <br />
+                        <img style="width:50%;margin: 0 auto;display: block;" src="{{el3.qr_url}}"/>
+                     </div>
+                </div>
+                {{username}}
+                <div ng-if="user">
+                <p>Logged in user:</p>
+                <p>{{user}}</p>
+                <button class="btn btn-success" type="button" ng-click="send('on')">Abre tu cuenta</button>
+                <button class="btn btn-danger" type="button" ng-click="send('off')">Cierra tu cuenta</button>
+                </div>
+                </div>
+            </div>
+
+
+</div>
+
+
+
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBXTmSdlQghhl1sMl5ln70KObGa5yX8WUc",
+    authDomain: "beertron-2d9fb.firebaseapp.com",
+    databaseURL: "https://beertron-2d9fb.firebaseio.com",
+    projectId: "beertron-2d9fb",
+    storageBucket: "beertron-2d9fb.appspot.com",
+    messagingSenderId: "507400187135"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+   window.onload = function () {
+    var pubnub = PUBNUB({
+    subscribe_key: 'sub-c-f8411e14-651c-11e8-9499-26ede0a09d22',
+    publish_key: 'pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53',
+    ssl: true
+});
+
+    window.thisScope = angular.element(document.getElementById('displayController')).scope();
+
+
+    /*thisScope.getSectionSeats('101','301');
+    thisScope.$apply();*/
+    // Subscribe with messages
+
+pubnub.subscribe({
+    channel : 'sirvetron',
+    message : function( message, env, channel ){
+        // RECEIVED A MESSAGE.
+
+                        switch(message.tapid) {
+                            case "elkeg1":
+                                thisScope.tap1_status = message.light;
+                                break;
+                            case "elkeg2":
+                                thisScope.tap2_status = message.light;
+                                break;
+                            case "el3":
+                                thisScope.tap3_status = message.light;
+                                break;
+                            }
+                        if(message.light == 'on'){
+                            thisScope.log_user(message.userid,message.tapid);
+                            console.log('log user '+message.userid+' '+message.tapid)
+                        };
+                        if(message.light == 'off'){
+                            thisScope.end_user(message.userid,message.tapid);
+                        }
+
+
+
+                thisScope.$apply();
+    },
+    connect : function(){
+        console.log("Connected")
+    },
+    disconnect : function(){
+        console.log("Disconnected")
+    },
+    reconnect : function(){
+        console.log("Reconnected")
+    },
+    error : function(){
+        console.log("Network Error")
+    },
+});
+
+
+}
+
+
+</script>
+</body>
+</html>

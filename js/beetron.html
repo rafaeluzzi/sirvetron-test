@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Beertron Test</title>
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script> -->
+<script src="http://cdn.pubnub.com/pubnub-3.16.5.min.js"></script>
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+<script src="/js/controllers.js"></script>
+
+<!------ Include the above in your HEAD tag ---------->
+<style type="text/css">
+  body {
+    padding-top:50px;
+}
+fieldset {
+    border: thin solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    padding-left: 40px;
+    background: #fbfbfb;
+}
+legend {
+   color: #678;
+}
+.form-control {
+    width: 95%;
+}
+label small {
+    color: #678 !important;
+}
+span.req {
+    color:maroon;
+    font-size: 112%;
+}
+</style>
+</head>
+<body ng-app="beertronApp" ng-controller="resultsCtrl" id="mainController">
+<div class="container">
+<div class="col-md-6">
+                <h1 class="page-header">Beertron =|= Status is {{account_status}}</h1>
+                <p>Self service biatch! :)</p>
+                {{username}}
+                <div ng-if="user">
+                <p>Logged in user:</p>
+                <p>{{user}}</p>
+                <button class="btn btn-success" type="button" ng-click="send('on')">Abre tu cuenta</button>
+                <button class="btn btn-danger" type="button" ng-click="send('off')">Cierra tu cuenta</button>
+                </div>
+            </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBXTmSdlQghhl1sMl5ln70KObGa5yX8WUc",
+    authDomain: "beertron-2d9fb.firebaseapp.com",
+    databaseURL: "https://beertron-2d9fb.firebaseio.com",
+    projectId: "beertron-2d9fb",
+    storageBucket: "beertron-2d9fb.appspot.com",
+    messagingSenderId: "507400187135"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+   window.onload = function () {
+     var pubnub = PUBNUB({
+    subscribe_key: 'sub-c-f8411e14-651c-11e8-9499-26ede0a09d22',
+    publish_key: 'pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53',
+    ssl: true
+});
+    window.thisScope = angular.element(document.getElementById('mainController')).scope();
+
+
+    /*thisScope.getSectionSeats('101','301');
+    thisScope.$apply();*/
+    // Subscribe with messages
+
+pubnub.subscribe({
+    channel : 'sirvetron',
+    message : function( message, env, channel ){
+        // RECEIVED A MESSAGE.
+                thisScope.account_status = message.light;
+                thisScope.$apply();
+    },
+    connect : function(){
+        console.log("Connected")
+    },
+    disconnect : function(){
+        console.log("Disconnected")
+    },
+    reconnect : function(){
+        console.log("Reconnected")
+    },
+    error : function(){
+        console.log("Network Error")
+    },
+});
+
+
+  thisScope.db = firebase.firestore();
+  const settings = {timestampsInSnapshots: true};
+  thisScope.db.settings(settings);
+  thisScope.$apply();
+
+}
+
+
+</script>
+</body>
+</html>

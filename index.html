@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Sirvetron Test</title>
+  <title>Beertron Test</title>
 
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.20.3.js"></script>
-<script src="http://requirejs.org/docs/release/2.2.0/minified/require.js"></script>
-<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-route.js"></script> -->
+<script src="http://cdn.pubnub.com/pubnub-3.16.5.min.js"></script>
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+<script src="//www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+<script src="/js/controllers.js"></script>
 
 <!------ Include the above in your HEAD tag ---------->
 <style type="text/css">
   body {
     padding-top:50px;
+}
+.container{
+    width: 100%;
+    height: 100vh;
 }
 fieldset {
     border: thin solid #ccc;
@@ -39,41 +45,45 @@ span.req {
 }
 </style>
 </head>
-<body>
+<body ng-app="beertronApp" ng-controller="resultsCtrl" id="mainController">
 <div class="container">
   <div class="row">
-        <div class="col-md-6">
+         <div class="col-md-6">
             <form action="" method="post" id="fileForm" role="form">
-            <fieldset><legend class="text-center">IoT baby! hehe Internet of things remote controlled Sirvetron. </legend>
+            <fieldset><legend class="text-center">IoT baby! hehe Internet of things remote controlled Beertron. </legend>
 
 
 
             <div class="form-group">
                 <label for="lastname"><span class="req">* </span> Nombre: </label>
-                    <input class="form-control" type="text" name="lastname" id = "user" onkeyup = "Validate(this)" placeholder="Quien quiere prender el Sirvetron" required />
+                    <input class="form-control" type="text" name="lastname" id = "user" onkeyup = "Validate(this)" placeholder="Quien quiere prender el Beertron" required />
                         <div id="errLast"></div>
             </div>
 
 
             <div class="form-group">
-                <input class="btn btn-success" type="button" name="submit_reg" value="Prende el Sirvetron" onclick="send('on')">
-                <input class="btn btn-danger" type="button" name="submit_reg" value="Apaga el Sirvetron" onclick="send('off')">
+                <input class="btn btn-success" type="button" name="submit_reg" value="Login" ng-click="login()">
             </div>
 
 
 
             </fieldset>
-            </form><!-- ends register form -->
+            </form>
 
-<script type="text/javascript">
-  document.getElementById("field_terms").setCustomValidity("Please indicate that you accept the Terms and Conditions");
-</script>
+
         </div><!-- ends col-6 -->
 
-            <div class="col-md-6">
-                <h1 class="page-header">Sirvetron =|= </h1>
-                <p>Self service biatch! :)</p>
 
+<div class="col-md-6">
+                <h1 class="page-header">Tap 3 : status is {{tap3_status}}</h1>
+                <p>Self service biatch! :)</p>
+                {{username}}
+                <div ng-if="user">
+                <p>Logged in user:</p>
+                <p>{{user}}</p>
+                <button class="btn btn-success" type="button" ng-click="send('on','elkeg1')">Abre tu cuenta en Keg 1</button>
+                <button class="btn btn-danger" type="button" ng-click="send('off','elkeg1')">Cierra tu cuenta en Keg 1</button>
+                </div>
             </div>
 
   </div>
@@ -167,84 +177,35 @@ var regAdd = /^(?=.*\d)[a-zA-Z\s\d\/]+$/;
     }
 }
 /* pubnub stuff */
-var pubnub = new PubNub({
-    subscribeKey: "sub-c-f8411e14-651c-11e8-9499-26ede0a09d22",
-    publishKey: "pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53",
+
+var pubnub = PUBNUB({
+    subscribe_key: 'sub-c-f8411e14-651c-11e8-9499-26ede0a09d22',
+    publish_key: 'pub-c-ccaa3845-5134-4e6b-84f0-52ac0b9c9a53',
     ssl: true
 });
-function send(mode){
 
-   var eluser = document.getElementById('user').value;
-
-   if(eluser === undefined || eluser == ''){
-    eluser = 'el que no quizo escribir su nombre';
-   }
-   console.log(eluser);
-  pubnub.publish(
-    {
-        message: {
-            'light': mode,'user':eluser
-        },
-        channel: 'sirvetron',
-        sendByPost: false, // true to send via post
-        storeInHistory: false, //override default storage options
-        meta: {
-            "cool": "meta"
-        }   // publish extra meta with the request
-    },
-    function (status, response) {
-        if (status.error) {
-            // handle error
-            console.log(status)
-        } else {
-            alert("Sirvetron "+mode+" w/ timetoken", response.timetoken)
-        }
-    }
-);
+function apisend(mode,tapid,user,userid){
+console.log(user+' '+mode+' '+userid+' '+tapid);
+if(tapid == 1){
+  tapid = 'elkeg1';
+}else if(tapid == 2){
+  tapid = 'elkeg2';
+}else if(tapid == 3){
+  tapid = 'el3';
 }
-function apisend(user,mode){
 
-   var eluser = user;
-
-   if(eluser === undefined || eluser == ''){
-    eluser = 'el que no quizo escribir su nombre';
-   }
-   console.log(eluser);
-  pubnub.publish(
-    {
-        message: {
-            'light': mode,'user':eluser
-        },
-        channel: 'sirvetron',
-        sendByPost: false, // true to send via post
-        storeInHistory: false, //override default storage options
-        meta: {
-            "cool": "meta"
-        }   // publish extra meta with the request
+ pubnub.publish({
+    channel  : 'sirvetron',
+    message  : {
+        'light': mode,'user':user,'userid':userid,'tapid':tapid
     },
-    function (status, response) {
-        if (status.error) {
-            // handle error
-            console.log(status)
-        } else {
-            console.log("Sirvetron "+mode+" w/ timetoken", response.timetoken)
-        }
-    }
-);
-}
-function sub(){
-  pubnub.subscribe({
-    channel : 'sirvetron',
-    message : function(m){
-        console.log(m)
-    },
-    error : function (error) {
-        // Handle error here
-        console.log(JSON.stringify(error));
+    callback : function(m){
+        console.log(m);
+        console.log("Beertron "+mode+" w/ timetoken");
     }
 });
 }
-sub();
+
 function getAllUrlParams(url) {
 
   // get query string from url (optional) or window
@@ -278,7 +239,7 @@ function getAllUrlParams(url) {
 
       // (optional) keep case consistent
       paramName = paramName.toLowerCase();
-      paramValue = paramValue.toLowerCase();
+      //paramValue = paramValue.toLowerCase();
 
       // if parameter name already exists
       if (obj[paramName]) {
@@ -306,11 +267,12 @@ function getAllUrlParams(url) {
 
   return obj;
 }
-if(getAllUrlParams().user){
+console.log('userid: '+getAllUrlParams().userid);
+if(getAllUrlParams().user && getAllUrlParams().status && getAllUrlParams().tapid && getAllUrlParams().userid){
     if(getAllUrlParams().status == 'on'){
-            apisend(getAllUrlParams().user,'on');
+            apisend('on',getAllUrlParams().tapid,getAllUrlParams().user,getAllUrlParams().userid);
     }else if(getAllUrlParams().status == 'off'){
-            apisend(getAllUrlParams().user,'off');
+            apisend('off',getAllUrlParams().tapid,getAllUrlParams().user,getAllUrlParams().userid);
     }
 }
 </script>
@@ -329,14 +291,46 @@ if(getAllUrlParams().user){
   firebase.initializeApp(config);
 </script>
 <script>
-  const firestore = firebase.firestore();
-  const settings = {timestampsInSnapshots: true};
-  firestore.settings(settings);
-  firestore.collection("users").get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
-    });
+   window.onload = function () {
+    window.thisScope = angular.element(document.getElementById('mainController')).scope();
+
+
+
+
+    /*thisScope.getSectionSeats('101','301');
+    thisScope.$apply();*/
+    // Subscribe with messages
+
+pubnub.subscribe({
+    channel : 'sirvetron',
+    message : function( message, env, channel ){
+        // RECEIVED A MESSAGE.
+                thisScope.account_status = message.light;
+                thisScope.$apply();
+    },
+    connect : function(){
+        console.log("Connected")
+    },
+    disconnect : function(){
+        console.log("Disconnected")
+    },
+    reconnect : function(){
+        console.log("Reconnected")
+    },
+    error : function(){
+        console.log("Network Error")
+    },
 });
+
+
+  thisScope.db = firebase.firestore();
+  const settings = {timestampsInSnapshots: true};
+  thisScope.db.settings(settings);
+  thisScope.$apply();
+
+}
+
+
 </script>
 </body>
 </html>
