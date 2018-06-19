@@ -293,6 +293,9 @@ pubnub.subscribe({
                             };
                             if(message.light == 'off'){
                                 thisScope.end_user(message.userid,message.tapid);
+                                thisScope.serving = 0;
+                                thisScope.serving_price =0;
+                                thisScope.user_bal = false;
                             }
                         }
                         if(channel == 'sirvetron_pour'){
