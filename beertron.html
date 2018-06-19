@@ -134,20 +134,22 @@ font-size: 18px;
                                 <div class="info">
                                     <div class="title">
                                         <p class="qr-title center" style="color:#0f0f0f;">Now Serving: {{userelkeg1.name}} {{userelkeg1.lastname}}</p>
-                                        <p class="text">Your Balance: ${{userelkeg1.credits}}</p>
+                                        <p ng-if="user_bal" class="text">Your Balance: ${{user_bal}}</p>
+                                        <p ng-if="!user_bal" class="text">...getting your tap ready</p>
                                     </div>
                                     
-                                    <div class="row">
+                                    <div ng-if="user_bal" class="row">
                                     <div class="col-md-6 center">
                                     <div class="desc">Pouring</div>
-                                    <p class="qr-title center" style="color:#0f0f0f">{{elkeg1.serving}} oz</p>
+                                    <p class="qr-title center" style="color:#0f0f0f">{{serving}} oz</p>
                                     </div>
                                     <div class="col-md-6 center">
                                     <div class="desc">Pour Charge</div>
-                                    <p class="qr-title center" style="color:#0f0f0f">${{elkeg1.serving_price}}</p>
-                                    </div>
+                                    <p class="qr-title center" style="color:#0f0f0f">${{serving_price}}</p>
                                     </div>
                                     <div class="desc">Close your account after done. Enjoy!</div>
+                                    </div>
+                                    
                                 </div>
                                 <div>
                                     <p>This is what i wanted to develop</p>
@@ -270,27 +272,37 @@ font-size: 18px;
     // Subscribe with messages
 
 pubnub.subscribe({
-    channel : 'sirvetron',
+    channel : ['sirvetron','sirvetron_pour'],
     message : function( message, env, channel ){
         // RECEIVED A MESSAGE.
-
-                        switch(message.tapid) {
-                            case "elkeg1":
-                                thisScope.tap1_status = message.light;
-                                break;
-                            case "elkeg2":
-                                thisScope.tap2_status = message.light;
-                                break;
-                            case "el3":
-                                thisScope.tap3_status = message.light;
-                                break;
+                        if(channel == 'sirvetron'){
+                            switch(message.tapid) {
+                                case "elkeg1":
+                                    thisScope.tap1_status = message.light;
+                                    break;
+                                case "elkeg2":
+                                    thisScope.tap2_status = message.light;
+                                    break;
+                                case "el3":
+                                    thisScope.tap3_status = message.light;
+                                    break;
+                                }
+                            if(message.light == 'on'){
+                                thisScope.log_user(message.userid,message.tapid);
+                                console.log('log user '+message.userid+' '+message.tapid)
+                            };
+                            if(message.light == 'off'){
+                                thisScope.end_user(message.userid,message.tapid);
                             }
-                        if(message.light == 'on'){
-                            thisScope.log_user(message.userid,message.tapid);
-                            console.log('log user '+message.userid+' '+message.tapid)
-                        };
-                        if(message.light == 'off'){
-                            thisScope.end_user(message.userid,message.tapid);
+                        }
+                        if(channel == 'sirvetron_pour'){
+                            if(!message.justbal){
+                                thisScope.serving = message.serving;
+                                thisScope.serving_price = message.serving_price;
+                                thisScope.user_bal = message.user_bal;
+                            }else{
+                                thisScope.user_bal = message.justbal;
+                            }
                         }
 
 
