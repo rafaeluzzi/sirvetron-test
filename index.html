@@ -308,8 +308,8 @@ pubnub.subscribe({
     channel : 'sirvetron',
     message : function( message, env, channel ){
         // RECEIVED A MESSAGE.
-                thisScope.account_status = message.light;
-                thisScope.$apply();
+                /*thisScope.account_status = message.light;
+                thisScope.$apply();*/
     },
     connect : function(){
         console.log("Connected")

@@ -26,27 +26,6 @@ $scope.login = function(){
 }//ends login
 $scope.send = function(mode,tapid){
     if($scope.user){
-        /*pubnub.publish(
-          {
-              message: {
-                  'light': mode,'user':$scope.user.username
-              },
-              channel: 'sirvetron',
-              sendByPost: false, // true to send via post
-              storeInHistory: false, //override default storage options
-              meta: {
-                  "cool": "meta"
-              }   // publish extra meta with the request
-          },
-          function (status, response) {
-              if (status.error) {
-                  // handle error
-                  console.log(status)
-              } else {
-
-              }
-          }
-        );*/
         pubnub.publish({
     channel  : 'sirvetron',
     message  : {
@@ -80,6 +59,7 @@ beertronApp.controller('displayCtrl', function ($scope,$rootScope,$timeout) {
         });
 
     });
+  $scope.tap1_status = 'off';
   $scope.log_user = function(userid,tapid){
     var docRef = $scope.db.collection("users").doc(userid);
     docRef.onSnapshot(function(doc) {
