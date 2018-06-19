@@ -95,7 +95,11 @@ beertronApp.controller('displayCtrl', function ($scope,$rootScope,$timeout) {
   };
 
   $scope.end_user = function(userid,tapid){
-      $scope['user'+tapid] = null;
+      $scope['user'+tapid] = false;
+      $scope.serving = 0;
+      $scope.serving_price =0;
+      $scope.user_bal = false;
+      $scope.$apply();
   }
 
   });
