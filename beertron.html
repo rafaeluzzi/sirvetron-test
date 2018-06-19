@@ -292,12 +292,14 @@ pubnub.subscribe({
                                 thisScope.serving = 0;
                                 thisScope.serving_price =0;
                                 console.log('log user '+message.userid+' '+message.tapid)
+                                thisScope.$apply();
                             };
                             if(message.light == 'off'){
                                 thisScope.end_user(message.userid,message.tapid);
                                 thisScope.serving = 0;
                                 thisScope.serving_price =0;
                                 thisScope.user_bal = false;
+                                thisScope.$apply();
                             }
                         }
                         if(channel == 'sirvetron_pour'){
@@ -305,14 +307,13 @@ pubnub.subscribe({
                                 thisScope.serving = message.serving;
                                 thisScope.serving_price = message.serving_price;
                                 thisScope.user_bal = message.user_bal;
+                                thisScope.$apply();
                             }else{
                                 thisScope.user_bal = message.justbal;
+                                thisScope.$apply();
                             }
                         }
 
-
-
-                thisScope.$apply();
     },
     connect : function(){
         console.log("Connected")
