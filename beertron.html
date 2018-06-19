@@ -85,8 +85,8 @@ font-size: 18px;
 <div class="container">
 <div class="header-video">
 <video autoplay="" class="background-video funpeople" data-prevent-cleanup="keep" loop="" preload="">
-<source src="http://citywiz.com/img/video/funpeople.mp4" type="video/mp4">
-<source src="http://citywiz.com/img/video/funpeople.webm" type="video/webm">
+<source src="/citywiz.com/img/video/funpeople.mp4" type="video/mp4">
+<source src="//citywiz.com/img/video/funpeople.webm" type="video/webm">
 </video>
 <div class="video-overlay"></div>
 </div>
@@ -296,10 +296,7 @@ pubnub.subscribe({
                             };
                             if(message.light == 'off'){
                                 thisScope.end_user(message.userid,message.tapid);
-                                thisScope.serving = 0;
-                                thisScope.serving_price =0;
-                                thisScope.user_bal = false;
-                                thisScope.$apply();
+                                
                             }
                         }
                         if(channel == 'sirvetron_pour'){
